@@ -14,16 +14,16 @@ import sys
 import json
 import urllib.parse
 
-# Ensure root directory is in sys.path
-ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if ROOT_DIR not in sys.path:
-    sys.path.append(ROOT_DIR)
+# Ensure backend directory is in sys.path
+BACKEND_DIR = os.path.dirname(os.path.abspath(__file__))
+if BACKEND_DIR not in sys.path:
+    sys.path.append(BACKEND_DIR)
 
-from ai_layer.agent_adk import adk_agent
-from backend.clickhouse_db import db_engine
+from agent_adk import adk_agent
+from clickhouse_db import db_engine
 
 PORT = 8085
-FRONTEND_DIR = os.path.join(ROOT_DIR, "frontend")
+FRONTEND_DIR = os.path.join(os.path.dirname(BACKEND_DIR), "frontend")
 
 class DirectorsCutHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):

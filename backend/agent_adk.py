@@ -7,13 +7,9 @@ Line Producer Agent orchestrates:
 """
 
 import os
-import sys
 import json
 from typing import Dict, Any
-
-# Ensure parent directory is in path for module imports
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from backend.clickhouse_db import db_engine
+from clickhouse_db import db_engine
 
 class GoogleADKLineProducerAgent:
     def __init__(self):
@@ -23,7 +19,7 @@ class GoogleADKLineProducerAgent:
     def execute_use_case_1_breakdown(self, screenplay_text: str = None) -> Dict[str, Any]:
         """Use Case 1: Script Breakdown Engine (The Foundation)"""
         if not screenplay_text:
-            screenplay_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), "backend", "sample_screenplay.txt")
+            screenplay_file = os.path.join(os.path.dirname(__file__), "sample_screenplay.txt")
             if os.path.exists(screenplay_file):
                 with open(screenplay_file, "r") as f:
                     screenplay_text = f.read()
