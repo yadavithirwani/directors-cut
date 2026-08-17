@@ -17,7 +17,7 @@
       <div class="clapper-icon">🎬</div>
       <div class="logo-text">
         <span class="brand-title">DIRECTOR'S <span class="highlight">CUT</span></span>
-        <span class="brand-sub">Autonomous Hollywood Operations Agent (Google ADK & ClickHouse)</span>
+        <span class="brand-sub">Autonomous Hollywood Operations Agent (Google ADK & ClickHouse Cost Engine)</span>
       </div>
     </div>
 
@@ -26,7 +26,7 @@
         <span class="badge-dot"></span> Google ADK Engine
       </div>
       <div class="badge clickhouse-badge">
-        <span class="badge-dot"></span> ClickHouse Event DB
+        <span class="badge-dot"></span> ClickHouse Line-Item Cost DB
       </div>
     </div>
   </header>
@@ -34,17 +34,17 @@
   <!-- MAIN USE CASE PIPELINE GRID -->
   <main class="dashboard-grid">
 
-    <!-- LEFT COLUMN: USE CASE 1 - SCRIPT BREAKDOWN -->
+    <!-- LEFT COLUMN: USE CASE 1 - SCRIPT BREAKDOWN & COST ESTIMATION -->
     <section class="panel breakdown-panel">
       <div class="panel-header">
-        <h2>🎬 Use Case 1: Script Breakdown (Foundation)</h2>
-        <span class="pill-tag">ClickHouse Event DB</span>
+        <h2>🎬 Use Case 1: Script Breakdown & Cost Engine</h2>
+        <span class="pill-tag">ClickHouse Line-Item Costs</span>
       </div>
       <p class="panel-tagline">"A screenplay isn't a document. It's a database."</p>
 
       <div class="script-input-box">
         <label for="script-text">Screenplay Text:</label>
-        <textarea id="script-text" rows="6" placeholder="Paste script or use sample screenplay...">SCENE 1 - INT. APARTMENT - DAY
+        <textarea id="script-text" rows="5" placeholder="Paste screenplay text...">SCENE 1 - INT. APARTMENT - DAY
 SARAH holds a metallic BRIEFCASE tight.
 JACK stands near the window.
 Sarah places the BRIEFCASE on the dining table.
@@ -54,47 +54,47 @@ Sarah walks briskly under an umbrella past a BLACK SEDAN.
 
 SCENE 3 - INT. WAREHOUSE - NIGHT
 SARAH enters holding the metallic BRIEFCASE. MARCUS waits in shadows. Sarah sets BRIEFCASE on steel container.</textarea>
-        <button class="btn btn-primary" id="btn-run-breakdown">⚡ Ingest Breakdown to ClickHouse</button>
+        <button class="btn btn-primary" id="btn-run-breakdown">⚡ Ingest Breakdown & Calculate Costs</button>
       </div>
 
       <div class="breakdown-output" id="breakdown-output">
-        <div class="placeholder-msg">Click <strong>Ingest Breakdown to ClickHouse</strong> to parse screenplay entities into ClickHouse tables.</div>
+        <div class="placeholder-msg">Click <strong>Ingest Breakdown & Calculate Costs</strong> to parse scenes, wardrobe, and prop line-item costs into ClickHouse.</div>
       </div>
     </section>
 
-    <!-- CENTER COLUMN: USE CASE 2 - DOWNSTREAM IMPACT ANALYSIS -->
+    <!-- CENTER COLUMN: USE CASE 2 - DOWNSTREAM IMPACT & FINANCIAL DELTA -->
     <section class="panel impact-panel">
       <div class="panel-header">
-        <h2>⚡ Use Case 2: Downstream Impact Analysis</h2>
+        <h2>⚡ Use Case 2: Downstream Impact & Financial Delta</h2>
         <span class="pill-tag">Financial & Schedule Delta</span>
       </div>
-      <p class="panel-tagline">Calculate ripple effects of creative script edits via ClickHouse SQL queries.</p>
+      <p class="panel-tagline">Calculate financial, location, and scheduling ripple effects via ClickHouse SQL queries.</p>
 
       <div class="impact-input-box">
         <label for="input-script-change">Submitted Script Edit:</label>
         <input type="text" id="input-script-change" value="Move Scene 1 from Apartment to Industrial Warehouse Docks at Night.">
-        <button class="btn btn-secondary" id="btn-analyze-impact">🔍 Run ClickHouse Impact Analysis</button>
+        <button class="btn btn-secondary" id="btn-analyze-impact">🔍 Calculate Financial & Location Delta</button>
       </div>
 
       <div class="impact-results" id="impact-results">
-        <div class="placeholder-msg">Click <strong>Run ClickHouse Impact Analysis</strong> to calculate budget and scheduling deltas.</div>
+        <div class="placeholder-msg">Click <strong>Calculate Financial & Location Delta</strong> to evaluate cost ripple effects.</div>
       </div>
     </section>
 
-    <!-- RIGHT COLUMN: USE CASE 3 - CONTINUITY MANAGEMENT -->
+    <!-- RIGHT COLUMN: USE CASE 3 - CONTINUITY MANAGEMENT & RESHOOT RISK -->
     <section class="panel continuity-panel">
       <div class="panel-header">
-        <h2>🔍 Use Case 3: Continuity Management</h2>
+        <h2>🔍 Use Case 3: Continuity Management & Reshoot Risk</h2>
         <span class="pill-tag">Temporal State Engine</span>
       </div>
-      <p class="panel-tagline">Programmatically track actor & prop physical states across scenes to catch reshoot bugs.</p>
+      <p class="panel-tagline">Programmatically track actor & prop physical states to prevent $65,000+ reshoot errors.</p>
 
       <div class="continuity-controls">
-        <button class="btn btn-warning" id="btn-run-continuity">🛡️ Run ClickHouse Continuity Check</button>
+        <button class="btn btn-warning" id="btn-run-continuity">🛡️ Run Continuity & Reshoot Cost Check</button>
       </div>
 
       <div class="continuity-results" id="continuity-results">
-        <div class="placeholder-msg">Click <strong>Run ClickHouse Continuity Check</strong> to trace character prop states across scene timelines.</div>
+        <div class="placeholder-msg">Click <strong>Run Continuity & Reshoot Cost Check</strong> to verify character prop states across scene timelines.</div>
       </div>
     </section>
 
