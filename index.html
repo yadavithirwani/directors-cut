@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AETHER Ops — Autonomous Cybernetic Agent War Room</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- TOP NAVIGATION HEADER -->
+  <header class="app-header">
+    <div class="logo-group">
+      <div class="cyber-pulse"></div>
+      <div class="logo-text">
+        <span class="brand-title">AETHER <span class="highlight">OPS</span></span>
+        <span class="brand-sub">Multi-Partner AI Agent Command Center</span>
+      </div>
+    </div>
+
+    <!-- PARTNER BADGES -->
+    <div class="partner-badges">
+      <div class="badge grafana-badge" id="badge-grafana" title="Grafana Cloud MCP (PromQL, LogQL, Tempo, IRM)">
+        <span class="badge-dot"></span> Grafana Cloud MCP
+      </div>
+      <div class="badge parallel-badge" id="badge-parallel" title="Parallel Web Search API">
+        <span class="badge-dot"></span> Parallel Search
+      </div>
+      <div class="badge clickhouse-badge" id="badge-clickhouse" title="ClickHouse Cloud MCP">
+        <span class="badge-dot"></span> ClickHouse MCP
+      </div>
+      <div class="badge ibm-badge" id="badge-ibm" title="IBM Bob Agent Workflow">
+        <span class="badge-dot"></span> IBM Bob
+      </div>
+      <div class="badge replit-badge" id="badge-replit" title="Replit Cloud Host">
+        <span class="badge-dot"></span> Replit Cloud
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button class="btn btn-primary" id="btn-run-scenario">
+        <span class="btn-icon">⚡</span> Run Incident Triage Matrix
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN DASHBOARD CONTENT GRID -->
+  <main class="dashboard-grid">
+
+    <!-- LEFT COLUMN: CONTROL & SCENARIOS -->
+    <section class="panel control-panel">
+      <div class="panel-header">
+        <h2>🛠️ Triage Control & Scenarios</h2>
+        <span class="live-indicator">LIVE SYSTEM READY</span>
+      </div>
+
+      <div class="scenario-selector">
+        <label for="scenario-select">Select Incident Scenario:</label>
+        <select id="scenario-select">
+          <option value="zero_day">🚨 Scenario 1: Zero-Day DB Pool Exhaustion (CVE-2026-1142)</option>
+          <option value="latency_blackout">⚡ Scenario 2: Global API Latency Spike & Tempo Trace Triage</option>
+          <option value="self_healing">🧠 Scenario 3: Self-Healing Multi-Agent Benchmarking Matrix</option>
+        </select>
+      </div>
+
+      <!-- AGENT CREW STATUS CARDS -->
+      <div class="crew-section">
+        <h3>🤖 Cybernetic Multi-Agent Crew</h3>
+        <div class="crew-grid">
+          <div class="crew-card active" id="crew-sentinel">
+            <div class="crew-header">
+              <span class="crew-avatar">📊</span>
+              <div>
+                <div class="crew-name">Sentinel</div>
+                <div class="crew-role">Grafana MCP Agent</div>
+              </div>
+            </div>
+            <div class="crew-status">Status: <span class="status-text">Monitoring PromQL/LogQL</span></div>
+          </div>
+
+          <div class="crew-card active" id="crew-oracle">
+            <div class="crew-header">
+              <span class="crew-avatar">🌐</span>
+              <div>
+                <div class="crew-name">Oracle</div>
+                <div class="crew-role">Parallel Web Agent</div>
+              </div>
+            </div>
+            <div class="crew-status">Status: <span class="status-text">Web Intelligence Active</span></div>
+          </div>
+
+          <div class="crew-card active" id="crew-architect">
+            <div class="crew-header">
+              <span class="crew-avatar">⚡</span>
+              <div>
+                <div class="crew-name">Architect</div>
+                <div class="crew-role">ClickHouse MCP Agent</div>
+              </div>
+            </div>
+            <div class="crew-status">Status: <span class="status-text">SQL Telemetry DB Connected</span></div>
+          </div>
+
+          <div class="crew-card active" id="crew-strategist">
+            <div class="crew-header">
+              <span class="crew-avatar">🟦</span>
+              <div>
+                <div class="crew-name">Strategist</div>
+                <div class="crew-role">IBM Bob Workflow</div>
+              </div>
+            </div>
+            <div class="crew-status">Status: <span class="status-text">Triage Logic Synthesizer</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- METRICS SUMMARY COUNTERS -->
+      <div class="metrics-counters">
+        <div class="counter-box">
+          <span class="counter-label">Total Spans</span>
+          <span class="counter-value" id="val-spans">6 Spans</span>
+        </div>
+        <div class="counter-box">
+          <span class="counter-label">Execution Latency</span>
+          <span class="counter-value" id="val-latency">2.45s</span>
+        </div>
+        <div class="counter-box">
+          <span class="counter-label">Est. Token Cost</span>
+          <span class="counter-value" id="val-cost">$0.0038</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- CENTER COLUMN: WORKFLOW REEL & OTEL TRACE INSPECTOR -->
+    <section class="panel main-panel">
+      <!-- TABS HEADER -->
+      <div class="tab-header">
+        <button class="tab-btn active" data-tab="tab-reel">🎬 Real-Time Play-by-Play Reel</button>
+        <button class="tab-btn" data-tab="tab-otel">📡 OTel Trace Tree Inspector</button>
+        <button class="tab-btn" data-tab="tab-grafana">📊 Grafana PromQL/LogQL Studio</button>
+        <button class="tab-btn" data-tab="tab-parallel">🌐 Parallel Web Search Terminal</button>
+        <button class="tab-btn" data-tab="tab-clickhouse">⚡ ClickHouse SQL Console</button>
+      </div>
+
+      <!-- TAB 1: WORKFLOW PLAY-BY-PLAY REEL -->
+      <div class="tab-content active" id="tab-reel">
+        <div class="reel-feed" id="reel-feed">
+          <div class="feed-step">
+            <div class="step-badge step-init">SYSTEM READY</div>
+            <div class="step-body">
+              <div class="step-title">AETHER Ops Command Center Initialized</div>
+              <div class="step-desc">All 5 Partner integrations ready (Grafana MCP, Parallel Web Search, ClickHouse Cloud, IBM Bob, Replit). Click <strong>Run Incident Triage Matrix</strong> to trigger live incident resolution.</div>
+            </div>
+            <div class="step-time">00:00.000</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: OPENTELEMETRY TRACE TREE INSPECTOR -->
+      <div class="tab-content" id="tab-otel">
+        <div class="otel-container">
+          <div class="otel-header">
+            <h3>OpenTelemetry (OTel) Native Trace Tree</h3>
+            <span class="otel-subtitle">Framework-agnostic span visualizer</span>
+          </div>
+          <div class="otel-tree" id="otel-tree">
+            <!-- Rendered dynamically by app.js -->
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: GRAFANA STUDIO -->
+      <div class="tab-content" id="tab-grafana">
+        <div class="studio-box">
+          <h3>📊 Grafana Cloud MCP Studio (PromQL & LogQL)</h3>
+          <div class="query-row">
+            <input type="text" id="input-grafana-promql" value='rate(http_requests_total{status="500"}[5m])' placeholder="Enter PromQL Query">
+            <button class="btn btn-secondary" id="btn-run-promql">Execute PromQL</button>
+          </div>
+          <div class="query-row">
+            <input type="text" id="input-grafana-logql" value='{app="payment-gateway"} |= "ConnectionRefusedError"' placeholder="Enter Loki LogQL Query">
+            <button class="btn btn-secondary" id="btn-run-logql">Execute LogQL</button>
+          </div>
+          <div class="query-output" id="output-grafana">
+            <pre>Click "Execute PromQL" or "Execute LogQL" to query Grafana Cloud MCP...</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 4: PARALLEL WEB SEARCH TERMINAL -->
+      <div class="tab-content" id="tab-parallel">
+        <div class="studio-box">
+          <h3>🌐 Parallel Real-Time Web Search & Extraction Terminal</h3>
+          <div class="query-row">
+            <input type="text" id="input-parallel-query" value='ConnectionPoolExhausted CVE-2026-1142 fix patch' placeholder="Enter Search Query">
+            <button class="btn btn-secondary" id="btn-run-parallel">Search Open Web</button>
+          </div>
+          <div class="query-output" id="output-parallel">
+            <pre>Click "Search Open Web" to execute live Parallel Web Search API query...</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 5: CLICKHOUSE SQL CONSOLE -->
+      <div class="tab-content" id="tab-clickhouse">
+        <div class="studio-box">
+          <h3>⚡ ClickHouse Cloud MCP SQL Analytics Console</h3>
+          <div class="query-row">
+            <input type="text" id="input-clickhouse-sql" value='SELECT run_id, agent_name, status, token_cost_usd, latency_ms FROM agent_telemetry_logs ORDER BY run_id DESC LIMIT 5' placeholder="Enter SQL Query">
+            <button class="btn btn-secondary" id="btn-run-clickhouse">Run SQL Analytics</button>
+          </div>
+          <div class="query-output" id="output-clickhouse">
+            <pre>Click "Run SQL Analytics" to query ClickHouse analytical database...</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT COLUMN: AI JUDGE SCORECARD & CODE PATCH -->
+    <section class="panel right-panel">
+      <div class="panel-header">
+        <h2>⚖️ AI Judge & Scorecard</h2>
+        <span class="score-badge" id="score-total">96 / 100</span>
+      </div>
+
+      <!-- SCORECARD METRICS -->
+      <div class="scorecard-body">
+        <div class="score-item">
+          <span>Goal Completion</span>
+          <div class="progress-bar"><div class="progress-fill" style="width: 100%;"></div></div>
+          <span class="score-val" id="score-goal">100%</span>
+        </div>
+        <div class="score-item">
+          <span>RCA Correctness</span>
+          <div class="progress-bar"><div class="progress-fill" style="width: 98%;"></div></div>
+          <span class="score-val" id="score-correctness">98%</span>
+        </div>
+        <div class="score-item">
+          <span>Tool Selection</span>
+          <div class="progress-bar"><div class="progress-fill" style="width: 95%;"></div></div>
+          <span class="score-val" id="score-tool-select">95%</span>
+        </div>
+        <div class="score-item">
+          <span>Tool Efficiency</span>
+          <div class="progress-bar"><div class="progress-fill" style="width: 92%;"></div></div>
+          <span class="score-val" id="score-efficiency">92%</span>
+        </div>
+      </div>
+
+      <!-- RECOMMENDATION & PATCH ENGINE -->
+      <div class="recommendation-card">
+        <h3>💡 Smart Behavioral Recommendation</h3>
+        <div class="rec-title" id="rec-title">Optimal Multi-MCP Execution Pattern</div>
+        <p class="rec-desc" id="rec-desc">Parallelized Grafana LogQL and Parallel Web Search tool calls, saving ~1.8s in total triage latency.</p>
+        <button class="btn btn-patch" id="btn-open-patch">📋 View & Copy Code Fix Patch</button>
+      </div>
+
+      <!-- LIVE RADAR DECORATION -->
+      <div class="radar-box">
+        <div class="radar-sweep"></div>
+        <div class="radar-text">TELEMETRY MATRIX MONITORING</div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- CODE PATCH MODAL -->
+  <div class="modal-overlay" id="modal-patch">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>🛠️ Actionable Python ADK Code Fix Patch</h3>
+        <button class="close-btn" id="btn-close-patch">&times;</button>
+      </div>
+      <div class="modal-body">
+        <pre><code id="code-patch-text"># Loading code patch...</code></pre>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="btn-copy-patch">📋 Copy Patch Code</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
