@@ -1,170 +1,104 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // DOM ELEMENTS
-  const btnRunScenario = document.getElementById('btn-run-scenario');
-  const scenarioSelect = document.getElementById('scenario-select');
-  const reelFeed = document.getElementById('reel-feed');
-  const otelTree = document.getElementById('otel-tree');
-  
-  // TABS
-  const tabBtns = document.querySelectorAll('.tab-btn');
-  const tabContents = document.querySelectorAll('.tab-content');
+  const btnRunBreakdown = document.getElementById('btn-run-breakdown');
+  const btnAnalyzeImpact = document.getElementById('btn-analyze-impact');
+  const btnRunContinuity = document.getElementById('btn-run-continuity');
 
-  // STUDIO INPUTS & BUTTONS
-  const inputPromql = document.getElementById('input-grafana-promql');
-  const inputLogql = document.getElementById('input-grafana-logql');
-  const btnRunPromql = document.getElementById('btn-run-promql');
-  const btnRunLogql = document.getElementById('btn-run-logql');
-  const outputGrafana = document.getElementById('output-grafana');
+  const scriptText = document.getElementById('script-text');
+  const inputScriptChange = document.getElementById('input-script-change');
 
-  const inputParallel = document.getElementById('input-parallel-query');
-  const btnRunParallel = document.getElementById('btn-run-parallel');
-  const outputParallel = document.getElementById('output-parallel');
+  const breakdownOutput = document.getElementById('breakdown-output');
+  const impactResults = document.getElementById('impact-results');
+  const continuityResults = document.getElementById('continuity-results');
 
-  const inputClickhouse = document.getElementById('input-clickhouse-sql');
-  const btnRunClickhouse = document.getElementById('btn-run-clickhouse');
-  const outputClickhouse = document.getElementById('output-clickhouse');
-
-  // SCORECARD & MODAL
-  const modalPatch = document.getElementById('modal-patch');
-  const btnOpenPatch = document.getElementById('btn-open-patch');
-  const btnClosePatch = document.getElementById('btn-close-patch');
-  const btnCopyPatch = document.getElementById('btn-copy-patch');
-  const codePatchText = document.getElementById('code-patch-text');
-
-  let currentPatchCode = "";
-
-  // TAB SWITCHING
-  tabBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      tabBtns.forEach(b => b.classList.remove('active'));
-      tabContents.forEach(c => c.classList.remove('active'));
-      btn.classList.add('active');
-      const target = document.getElementById(btn.dataset.tab);
-      if (target) target.classList.add('active');
-    });
-  });
-
-  // RUN TRIAGE MATRIX SCENARIO
-  btnRunScenario.addEventListener('click', async () => {
-    const selectedScenario = scenarioSelect.value;
-    reelFeed.innerHTML = `<div class="feed-step"><div class="step-badge">RUNNING</div><div class="step-body"><div class="step-title">Triggering Multi-Partner Incident Triage...</div></div></div>`;
-
+  // USE CASE 1: SCRIPT BREAKDOWN (THE FOUNDATION)
+  btnRunBreakdown.addEventListener('click', async () => {
+    breakdownOutput.innerHTML = '<div class="placeholder-msg">Parsing Screenplay & Writing ClickHouse Master Breakdown...</div>';
     try {
-      const resp = await fetch('/api/triage', {
+      const resp = await fetch('/api/breakdown', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ scenario: selectedScenario })
+        body: JSON.stringify({ screenplay_text: scriptText.value })
       });
       const data = await resp.json();
-
-      renderReelFeed(data.workflow_steps);
-      renderOTelTree(data.telemetry.spans);
-      renderScorecard(data.telemetry.scorecard);
+      renderBreakdown(data);
     } catch (err) {
-      console.error('Triage Error:', err);
-      reelFeed.innerHTML = `<div class="feed-step"><div class="step-badge" style="background:var(--rose-glow)">ERROR</div><div class="step-body"><div class="step-title">Triage Execution Failed</div><div class="step-desc">${err.message}</div></div></div>`;
+      breakdownOutput.innerHTML = `<p style="color:var(--rose-glow)">Breakdown Failed: ${err.message}</p>`;
     }
   });
 
-  // RENDER PLAY-BY-PLAY REEL FEED
-  function renderReelFeed(steps) {
-    reelFeed.innerHTML = '';
-    steps.forEach((s, idx) => {
-      const stepEl = document.createElement('div');
-      stepEl.className = 'feed-step';
-      stepEl.innerHTML = `
-        <div class="step-badge">STEP ${s.step}</div>
-        <div class="step-body">
-          <div class="step-title">${s.agent} — ${s.action}</div>
-          <div class="step-desc"><pre style="background:none;padding:0;color:var(--text-muted);font-family:var(--font-code);">${JSON.stringify(s.result, null, 2)}</pre></div>
-        </div>
-        <div class="step-time">+00:00.${(idx + 1) * 350}</div>
-      `;
-      reelFeed.appendChild(stepEl);
-    });
-  }
-
-  // RENDER OTEL SPAN TREE
-  function renderOTelTree(spans) {
-    otelTree.innerHTML = '';
-    if (!spans || spans.length === 0) {
-      otelTree.innerHTML = '<p>No OTel spans captured yet.</p>';
-      return;
+  // USE CASE 2: DOWNSTREAM IMPACT ANALYSIS
+  btnAnalyzeImpact.addEventListener('click', async () => {
+    impactResults.innerHTML = '<div class="placeholder-msg">Executing ClickHouse SQL Impact Queries...</div>';
+    try {
+      const resp = await fetch('/api/impact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ change_request: inputScriptChange.value })
+      });
+      const data = await resp.json();
+      renderImpact(data);
+    } catch (err) {
+      impactResults.innerHTML = `<p style="color:var(--rose-glow)">Impact Analysis Failed: ${err.message}</p>`;
     }
+  });
 
-    spans.forEach(span => {
-      const depthClass = span.parent_span_id ? (span.parent_span_id.includes('llm') ? 'depth-2' : 'depth-1') : '';
-      const nodeEl = document.createElement('div');
-      nodeEl.className = `tree-node ${depthClass}`;
-      nodeEl.innerHTML = `
-        <div style="display:flex;justify-content:space-between;">
-          <strong style="color:var(--cyan-glow);">${span.name}</strong>
-          <span style="color:var(--emerald-glow);">${span.duration_ms}ms</span>
-        </div>
-        <div style="font-size:0.7rem;color:var(--text-muted);margin-top:4px;">
-          Span ID: ${span.span_id} | Kind: ${span.kind} | Status: ${span.status}
-        </div>
-      `;
-      otelTree.appendChild(nodeEl);
-    });
-  }
-
-  // RENDER SCORECARD
-  function renderScorecard(scorecard) {
-    if (!scorecard) return;
-    document.getElementById('score-total').textContent = `${scorecard.overall_score} / 100`;
-    document.getElementById('score-goal').textContent = scorecard.metrics.goal_completion;
-    document.getElementById('score-correctness').textContent = scorecard.metrics.correctness;
-    document.getElementById('score-tool-select').textContent = scorecard.metrics.tool_selection;
-    document.getElementById('score-efficiency').textContent = scorecard.metrics.tool_efficiency;
-
-    document.getElementById('val-spans').textContent = '6 Spans';
-    document.getElementById('val-latency').textContent = '2.45s';
-    document.getElementById('val-cost').textContent = scorecard.token_usage.total_cost_usd;
-
-    if (scorecard.recommendation) {
-      document.getElementById('rec-title').textContent = scorecard.recommendation.title;
-      document.getElementById('rec-desc').textContent = scorecard.recommendation.impact;
-      currentPatchCode = scorecard.recommendation.code_fix;
-      codePatchText.textContent = currentPatchCode;
+  // USE CASE 3: CONTINUITY MANAGEMENT SYSTEM
+  btnRunContinuity.addEventListener('click', async () => {
+    continuityResults.innerHTML = '<div class="placeholder-msg">Querying ClickHouse Temporal Prop & Actor States...</div>';
+    try {
+      const resp = await fetch('/api/continuity', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ target_scene: 3, character: 'SARAH' })
+      });
+      const data = await resp.json();
+      renderContinuity(data);
+    } catch (err) {
+      continuityResults.innerHTML = `<p style="color:var(--rose-glow)">Continuity Check Failed: ${err.message}</p>`;
     }
+  });
+
+  // RENDER FUNCTIONS
+  function renderBreakdown(data) {
+    const b = data.breakdown;
+    breakdownOutput.innerHTML = `
+      <div class="result-card">
+        <strong style="color:var(--gold-glow)">✓ Ingested into ClickHouse Master Breakdown</strong>
+        <div style="margin-top:6px;">Total Scenes Parsed: <strong>${b.total_scenes}</strong></div>
+        <div style="margin-top:8px;"><strong>Scenes Table (ClickHouse script_scenes):</strong></div>
+        <pre style="color:var(--cyan-glow)">${JSON.stringify(b.scenes, null, 2)}</pre>
+        <div style="margin-top:8px;"><strong>Props Table (ClickHouse scene_props):</strong></div>
+        <pre style="color:var(--emerald-glow)">${JSON.stringify(b.props, null, 2)}</pre>
+      </div>
+    `;
   }
 
-  // QUERY BUTTON LISTENERS
-  btnRunPromql.addEventListener('click', async () => {
-    outputGrafana.innerHTML = '<pre>Executing PromQL...</pre>';
-    const res = await fetch(`/api/grafana/promql?query=${encodeURIComponent(inputPromql.value)}`);
-    const data = await res.json();
-    outputGrafana.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
-  });
+  function renderImpact(data) {
+    const imp = data.impact_analysis;
+    impactResults.innerHTML = `
+      <div class="result-card">
+        <div class="sql-badge">ClickHouse SQL: ${imp.clickhouse_sql_executed}</div>
+        <div style="margin-top:8px;">Location Delta: <span style="color:var(--rose-glow)">${imp.location_delta.original}</span> ➔ <span style="color:var(--emerald-glow)">${imp.location_delta.proposed}</span></div>
+        <div style="margin-top:4px;">Financial Delta: <strong style="color:var(--gold-glow)">${imp.financial_delta.cost_increase}</strong> (Original: ${imp.financial_delta.original_budget} | New: ${imp.financial_delta.new_budget})</div>
+        <div style="margin-top:4px;">Scheduling Delta: ${imp.scheduling_delta.lighting_crew_impact}</div>
+        <div style="margin-top:4px;">Permit Required: ${imp.scheduling_delta.permit_required}</div>
+      </div>
+    `;
+  }
 
-  btnRunLogql.addEventListener('click', async () => {
-    outputGrafana.innerHTML = '<pre>Executing LogQL...</pre>';
-    const res = await fetch(`/api/grafana/logql?query=${encodeURIComponent(inputLogql.value)}`);
-    const data = await res.json();
-    outputGrafana.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
-  });
-
-  btnRunParallel.addEventListener('click', async () => {
-    outputParallel.innerHTML = '<pre>Executing Parallel Web Search...</pre>';
-    const res = await fetch(`/api/parallel/search?query=${encodeURIComponent(inputParallel.value)}`);
-    const data = await res.json();
-    outputParallel.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
-  });
-
-  btnRunClickhouse.addEventListener('click', async () => {
-    outputClickhouse.innerHTML = '<pre>Executing ClickHouse SQL...</pre>';
-    const res = await fetch(`/api/clickhouse/sql?query=${encodeURIComponent(inputClickhouse.value)}`);
-    const data = await res.json();
-    outputClickhouse.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
-  });
-
-  // MODAL HANDLERS
-  btnOpenPatch.addEventListener('click', () => modalPatch.classList.add('active'));
-  btnClosePatch.addEventListener('click', () => modalPatch.classList.remove('active'));
-  btnCopyPatch.addEventListener('click', () => {
-    navigator.clipboard.writeText(currentPatchCode);
-    btnCopyPatch.textContent = '✅ Copied to Clipboard!';
-    setTimeout(() => { btnCopyPatch.textContent = '📋 Copy Patch Code'; }, 2000);
-  });
+  function renderContinuity(data) {
+    const c = data.continuity_check;
+    continuityResults.innerHTML = `
+      <div class="result-card">
+        <div class="sql-badge">ClickHouse SQL: ${c.clickhouse_sql_executed}</div>
+        <div style="margin-top:8px;"><strong>Temporal State Timeline:</strong></div>
+        <pre style="color:var(--cyan-glow)">${JSON.stringify(c.temporal_timeline, null, 2)}</pre>
+        <div style="margin-top:8px;padding:8px;background:rgba(244,63,94,0.15);border:1px solid var(--rose-glow);border-radius:4px;">
+          <strong style="color:var(--rose-glow)">⚠️ CONTINUITY ALERT:</strong>
+          <div style="margin-top:4px;font-size:0.75rem;">${c.continuity_alerts[0].issue}</div>
+          <div style="margin-top:4px;font-size:0.75rem;color:var(--emerald-glow)">💡 Recommendation: ${c.continuity_alerts[0].recommendation}</div>
+        </div>
+      </div>
+    `;
+  }
 });
