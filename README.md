@@ -12,6 +12,32 @@ In movie production, a single script change causes unmapped cascading delays acr
 
 ---
 
+## 📂 Modular Architecture & Directory Layout
+
+The project follows a clean enterprise separation between **Frontend**, **Backend**, and **AI Layer**:
+
+```
+directors-cut/
+├── frontend/                 # UI Command Center
+│   ├── index.html            # Dark Hollywood Glassmorphism UI
+│   ├── styles.css            # Responsive CSS styling
+│   └── app.js                # Frontend Use Case controller
+├── backend/                  # Data & Server Layer
+│   ├── server.py             # REST API server (/api/breakdown, /api/impact, /api/continuity)
+│   ├── clickhouse_db.py      # ClickHouse Relational Event DB Engine
+│   └── sample_screenplay.txt # Sample screenplay
+├── ai_layer/                 # Agentic Intelligence Layer
+│   └── agent_adk.py          # Google ADK Line Producer Agent & Sub-Agents
+├── .env.example              # Environment variables template
+├── .gitignore                # Git exclusion rules
+├── README.md                 # Project Overview
+├── DESIGN.md                 # Technical Architecture & Schema Spec
+├── IMPLEMENTATION_PLAN.md    # Development Roadmap
+└── record_demo.py            # Playwright Automated Video Recorder
+```
+
+---
+
 ## 🎯 The Three Core Use Cases (Strict Dependency Architecture)
 
 The system enforces a strict 3-tier dependency architecture where Use Cases 2 and 3 rely on the foundational database created in Use Case 1:
@@ -44,78 +70,31 @@ Programmatically tracks the physical and temporal state of actors and props acro
 
 ---
 
-## 🛠️ Tech Stack & Architecture
+## 🛠️ Tech Stack
 
 - **Orchestration Engine**: **Google ADK (Python)** — A primary *Line Producer Agent* manages state and delegates to specialized sub-agents (*BreakdownAgent*, *ImpactAnalysisAgent*, *ContinuityAgent*).
-- **LLM Core**: **Gemini 1.5 Pro / Gemini 3.6 Flash** (Vertex AI / Gemini API).
-- **Data Engine**: **ClickHouse Cloud / MCP** — Relational event database supporting sub-millisecond analytical SQL queries.
+- **LLM Core**: **Gemini 1.5 Pro** (Vertex AI / Gemini API).
+- **Data Engine**: **ClickHouse Cloud** — Relational event database supporting sub-millisecond analytical SQL queries.
 - **Frontend Command Center**: HTML5, Vanilla CSS3 (Dark Hollywood Glassmorphism), JavaScript (ES6+).
 - **Automated Video Recorder**: Playwright Python SDK.
 
 ---
 
-## 📊 ClickHouse Schema Design
-
-```sql
--- 1. Script Scenes Table
-CREATE TABLE script_scenes (
-    scene_id String,
-    scene_number UInt32,
-    location String,
-    time_of_day String,
-    description String,
-    cost_estimate Float64
-) ENGINE = MergeTree() ORDER BY (scene_number);
-
--- 2. Scene Characters Table
-CREATE TABLE scene_characters (
-    scene_number UInt32,
-    character_name String,
-    wardrobe String,
-    status String
-) ENGINE = MergeTree() ORDER BY (scene_number, character_name);
-
--- 3. Scene Props & State Table
-CREATE TABLE scene_props (
-    scene_number UInt32,
-    prop_name String,
-    prop_state String,
-    character_holding String
-) ENGINE = MergeTree() ORDER BY (scene_number, prop_name);
-```
-
----
-
-## 🚀 Quick Start & Installation
-
-### Prerequisites
-- Python 3.9+
-- ClickHouse Cloud Account or Local ClickHouse Instance
-
-### Running Locally
+## 🚀 Quick Start & Running Locally
 
 1. **Clone the Repository**:
    ```bash
-   git clone https://github.com/your-username/directors-cut.git
+   git clone https://github.com/yadavithirwani/directors-cut.git
    cd directors-cut
    ```
 
-2. **Configure Environment Variables**:
-   Create a `.env` file:
-   ```env
-   CLICKHOUSE_HOST=your-clickhouse-host.clickhouse.cloud
-   CLICKHOUSE_USER=default
-   CLICKHOUSE_PASSWORD=your_password
-   GEMINI_API_KEY=your_gemini_api_key
-   ```
-
-3. **Start the Director's Cut Server**:
+2. **Start the Backend Server**:
    ```bash
-   python3 server.py
+   python3 backend/server.py
    ```
-   Open your browser at: `http://localhost:8085`
+   Open your browser at: **`http://localhost:8085`**
 
-4. **Generate Demo Video Artifact**:
+3. **Generate Automated Demo Video**:
    ```bash
    python3 record_demo.py
    ```

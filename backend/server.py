@@ -1,6 +1,6 @@
 """
 DIRECTOR'S CUT - Main Backend Server
-Serves static UI assets and provides clean REST API endpoints for:
+Serves static UI assets from frontend/ and provides REST API endpoints for:
 - POST /api/breakdown (Use Case 1: Script Breakdown Engine)
 - POST /api/impact (Use Case 2: Downstream Impact Analysis)
 - POST /api/continuity (Use Case 3: Continuity Management System)
@@ -10,17 +10,24 @@ Serves static UI assets and provides clean REST API endpoints for:
 import http.server
 import socketserver
 import os
+import sys
 import json
 import urllib.parse
-from agent_adk import adk_agent
-from clickhouse_db import db_engine
+
+# Ensure root directory is in sys.path
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if ROOT_DIR not in sys.path:
+    sys.path.append(ROOT_DIR)
+
+from ai_layer.agent_adk import adk_agent
+from backend.clickhouse_db import db_engine
 
 PORT = 8085
-DIRECTORY = os.path.dirname(os.path.abspath(__file__))
+FRONTEND_DIR = os.path.join(ROOT_DIR, "frontend")
 
 class DirectorsCutHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, directory=DIRECTORY, **kwargs)
+        super().__init__(*args, directory=FRONTEND_DIR, **kwargs)
 
     def do_POST(self):
         parsed_path = urllib.parse.urlparse(self.path)
@@ -87,6 +94,7 @@ if __name__ == '__main__':
     with socketserver.TCPServer(("", PORT), DirectorsCutHandler) as httpd:
         print(f"===========================================================")
         print(f"🎬 DIRECTOR'S CUT Server Running at http://localhost:{PORT}")
+        print(f"Frontend Directory: {FRONTEND_DIR}")
         print(f"Orchestration Engine: Google ADK (Python)")
         print(f"Data Engine: ClickHouse Cloud")
         print(f"===========================================================")
