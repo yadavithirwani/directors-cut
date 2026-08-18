@@ -1,6 +1,6 @@
 """
 DIRECTOR'S CUT - Main Backend Server
-Serves static UI assets from frontend/ and provides REST API endpoints for:
+Serves static UI assets and provides REST API endpoints for:
 - POST /api/breakdown (Use Case 1: Script Breakdown Engine)
 - POST /api/impact (Use Case 2: Downstream Impact Analysis)
 - POST /api/continuity (Use Case 3: Continuity Management System)
@@ -16,6 +16,9 @@ import urllib.parse
 
 # Ensure backend directory is in sys.path
 BACKEND_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_DIR = os.path.dirname(BACKEND_DIR)
+FRONTEND_DIR = os.path.join(PROJECT_DIR, "frontend")
+
 if BACKEND_DIR not in sys.path:
     sys.path.append(BACKEND_DIR)
 
@@ -23,11 +26,20 @@ from agent_adk import adk_agent
 from clickhouse_db import db_engine
 
 PORT = 8088
-FRONTEND_DIR = os.path.join(os.path.dirname(BACKEND_DIR), "frontend")
 
 class DirectorsCutHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, directory=FRONTEND_DIR, **kwargs)
+        super().__init__(*args, directory=PROJECT_DIR, **kwargs)
+
+    def do_GET(self):
+        # Cleanly map root / or /index.html to frontend/index.html
+        if self.path == "/" or self.path == "/index.html":
+            self.path = "/frontend/index.html"
+        elif self.path == "/styles.css":
+            self.path = "/frontend/styles.css"
+        elif self.path == "/app.js":
+            self.path = "/frontend/app.js"
+        return super().do_GET()
 
     def do_POST(self):
         parsed_path = urllib.parse.urlparse(self.path)
@@ -41,7 +53,7 @@ class DirectorsCutHandler(http.server.SimpleHTTPRequestHandler):
             body = {}
 
         # ---------------------------------------------------------------------
-        # USE CASE 1: SCRIPT BREAKDOWN ENGINE (THE FOUNDATION)
+        # USE CASE 1: SCRIPT BREAKDOWN ENGINE
         # ---------------------------------------------------------------------
         if path == "/api/breakdown":
             screenplay_text = body.get("screenplay_text")
@@ -71,7 +83,7 @@ class DirectorsCutHandler(http.server.SimpleHTTPRequestHandler):
         # DIRECT CLICKHOUSE SQL QUERY
         elif path == "/api/clickhouse/sql":
             sql_query = body.get("query", "SELECT * FROM script_scenes LIMIT 5")
-            result = db_engine.execute_sql(sql_query)
+            result = db_engine.execute_mcp_sql(sql_query)
             self._send_json(result)
             return
 
@@ -87,14 +99,14 @@ class DirectorsCutHandler(http.server.SimpleHTTPRequestHandler):
         self.wfile.write(body)
 
     def end_headers(self):
-        self.send_header('Cache-Control', 'no-store, no-cache, must-revalidate')
+        self.send_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
         super().end_headers()
 
 if __name__ == '__main__':
     with socketserver.TCPServer(("", PORT), DirectorsCutHandler) as httpd:
         print(f"===========================================================")
         print(f"🎬 DIRECTOR'S CUT Server Running at http://localhost:{PORT}")
-        print(f"Frontend Directory: {FRONTEND_DIR}")
+        print(f"Project Directory: {PROJECT_DIR}")
         print(f"Orchestration Engine: Google ADK (Python)")
         print(f"Data Engine: ClickHouse Cloud")
         print(f"===========================================================")

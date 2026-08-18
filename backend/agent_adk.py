@@ -44,7 +44,7 @@ class GoogleADKLineProducerAgent:
     # -------------------------------------------------------------------------
     def execute_use_case_1_breakdown(self, screenplay_text: str = None) -> Dict[str, Any]:
         """Google ADK Ingestion Agent parses screenplay text and ingests into ClickHouse"""
-        if not screenplay_text:
+        if screenplay_text is None:
             screenplay_file = os.path.join(os.path.dirname(__file__), "sample_screenplay.txt")
             if os.path.exists(screenplay_file):
                 with open(screenplay_file, "r") as f:
