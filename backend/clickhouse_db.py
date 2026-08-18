@@ -1,9 +1,6 @@
 """
-DIRECTOR'S CUT - ClickHouse MCP Server & Relational Database Engine
-Integrates official ClickHouse MCP (https://mcp.clickhouse.cloud/mcp) for:
-1. Use Case 1: Script Breakdown Ingestion (Screenplay -> ClickHouse relational tables)
-2. Use Case 2: Downstream Impact Analysis (ClickHouse SQL deltas for budget & schedule)
-3. Use Case 3: Continuity Management System (ClickHouse prop & character temporal state SQL)
+DIRECTOR'S CUT - ClickHouse Cloud MCP Engine (STRICT LIVE PRODUCTION MODE)
+No simulation fallbacks. Executes all 3 Use Cases directly against hosted ClickHouse Cloud MCP.
 """
 
 import os
@@ -34,46 +31,73 @@ class ClickHouseMCPEngine:
         self.password = os.getenv("CLICKHOUSE_PASSWORD", "").strip()
         self.database = os.getenv("CLICKHOUSE_DATABASE", "default").strip()
 
-    def is_live_configured(self) -> bool:
-        self.reload_config()
-        return bool(self.host and self.password and "your-clickhouse" not in self.host)
-
     def execute_mcp_sql(self, sql_query: str) -> Dict[str, Any]:
-        """Executes SQL queries via hosted ClickHouse Cloud MCP server (https://mcp.clickhouse.cloud/mcp)"""
+        """STRICT MODE: Executes SQL query against hosted ClickHouse Cloud MCP server (https://mcp.clickhouse.cloud/mcp).
+        Throws an explicit error if credentials are missing or connection fails."""
         self.reload_config()
-        if self.is_live_configured():
-            req_payload = json.dumps({
-                "jsonrpc": "2.0",
-                "method": "tools/call",
-                "params": {
-                    "name": "run_select_query",
-                    "arguments": {"query": sql_query}
-                },
-                "id": int(time.time())
-            }).encode("utf-8")
-            
-            req = urllib.request.Request(self.mcp_endpoint, data=req_payload, headers={
-                "Content-Type": "application/json",
-                "X-ClickHouse-Host": self.host,
+
+        if not self.host or not self.password or "your-clickhouse" in self.host:
+            return {
+                "status": "error",
+                "mcp_endpoint": self.mcp_endpoint,
+                "error": "ClickHouse Cloud credentials missing. Please set CLICKHOUSE_HOST and CLICKHOUSE_PASSWORD in your .env file.",
+                "live_mode": True
+            }
+
+        # Try hosted MCP JSON-RPC endpoint first, then direct SQL endpoint
+        req_payload = json.dumps({
+            "jsonrpc": "2.0",
+            "method": "tools/call",
+            "params": {
+                "name": "run_select_query",
+                "arguments": {"query": sql_query}
+            },
+            "id": int(time.time())
+        }).encode("utf-8")
+
+        req = urllib.request.Request(self.mcp_endpoint, data=req_payload, headers={
+            "Content-Type": "application/json",
+            "X-ClickHouse-Host": self.host,
+            "X-ClickHouse-User": self.user,
+            "X-ClickHouse-Key": self.password
+        })
+
+        try:
+            with urllib.request.urlopen(req, timeout=8) as resp:
+                output = json.loads(resp.read().decode())
+                return {
+                    "status": "success",
+                    "mcp_endpoint": self.mcp_endpoint,
+                    "live_mode": True,
+                    "raw_mcp_response": output
+                }
+        except Exception as mcp_err:
+            # Fallback to direct ClickHouse Cloud HTTP interface if MCP payload wrapper is raw SQL
+            url = f"https://{self.host}:{self.port}/?database={self.database}"
+            sql_req = urllib.request.Request(url, data=sql_query.encode("utf-8"), headers={
                 "X-ClickHouse-User": self.user,
-                "X-ClickHouse-Key": self.password
+                "X-ClickHouse-Key": self.password,
+                "Content-Type": "text/plain"
             })
             try:
-                with urllib.request.urlopen(req, timeout=5) as resp:
-                    output = json.loads(resp.read().decode())
-                    return {"status": "success", "mcp_endpoint": self.mcp_endpoint, "source": "live_clickhouse_mcp", "data": output}
-            except Exception as e:
-                print(f"[ClickHouse Cloud MCP Error] Query failed: {e}. Using local MCP engine.")
-
-        return {
-            "status": "success",
-            "mcp_endpoint": self.mcp_endpoint,
-            "source": "simulated_clickhouse_mcp",
-            "query": sql_query
-        }
+                with urllib.request.urlopen(sql_req, timeout=8) as resp:
+                    output = resp.read().decode()
+                    return {
+                        "status": "success",
+                        "mcp_endpoint": self.mcp_endpoint,
+                        "live_mode": True,
+                        "raw_result": output
+                    }
+            except Exception as sql_err:
+                return {
+                    "status": "error",
+                    "mcp_endpoint": self.mcp_endpoint,
+                    "live_mode": True,
+                    "error": f"ClickHouse Cloud connection failed: MCP error ({mcp_err}) | SQL error ({sql_err})"
+                }
 
     # -------------------------------------------------------------------------
-    # USE CASE 1: SCRIPT BREAKDOWN (THE FOUNDATION)
+    # USE CASE 1: SCRIPT BREAKDOWN (STRICT LIVE MODE)
     # -------------------------------------------------------------------------
     def run_script_breakdown(self, screenplay_text: str) -> Dict[str, Any]:
         """Parses screenplay text into ClickHouse relational tables via ClickHouse Cloud MCP"""
@@ -105,7 +129,7 @@ class ClickHouseMCPEngine:
         total_prop_cost = sum(p["prop_cost"] for p in props)
         grand_total_cost = total_location_cost + total_wardrobe_cost + total_prop_cost
 
-        # Execute INSERT statements via ClickHouse Cloud MCP
+        # Execute INSERT statements directly against ClickHouse Cloud MCP
         sql_scenes = "INSERT INTO script_scenes VALUES " + ", ".join([
             f"('scene_{s['scene_number']}', {s['scene_number']}, '{s['location']}', '{s['time_of_day']}', {s['location_cost']}, {s['permit_cost']})"
             for s in scenes
@@ -113,11 +137,10 @@ class ClickHouseMCPEngine:
         mcp_res = self.execute_mcp_sql(sql_scenes)
 
         return {
-            "status": "success",
+            "status": mcp_res.get("status", "success"),
             "use_case": "1_script_breakdown",
             "mcp_endpoint": self.mcp_endpoint,
-            "mcp_response": mcp_res,
-            "message": "Screenplay successfully parsed with line-item itemized costs into ClickHouse Cloud MCP tables.",
+            "mcp_execution": mcp_res,
             "cost_summary": {
                 "total_location_cost": f"${total_location_cost:,.2f}",
                 "total_wardrobe_cost": f"${total_wardrobe_cost:,.2f}",
@@ -133,10 +156,10 @@ class ClickHouseMCPEngine:
         }
 
     # -------------------------------------------------------------------------
-    # USE CASE 2: DOWNSTREAM IMPACT ANALYSIS WITH CLICKHOUSE MCP
+    # USE CASE 2: DOWNSTREAM IMPACT ANALYSIS (STRICT LIVE MODE)
     # -------------------------------------------------------------------------
     def analyze_downstream_impact(self, change_request: str) -> Dict[str, Any]:
-        """Calculates financial, scheduling, and logistical deltas of script changes via ClickHouse Cloud MCP"""
+        """Calculates financial, scheduling, and logistical deltas via ClickHouse Cloud MCP"""
         sql_query = "SELECT sum(location_cost + permit_cost) AS orig_loc_cost FROM script_scenes WHERE location LIKE '%APARTMENT%';"
         mcp_result = self.execute_mcp_sql(sql_query)
 
@@ -146,13 +169,13 @@ class ClickHouseMCPEngine:
         total_cost_delta = (new_location_cost + new_lighting_rig_cost) - orig_location_cost
 
         return {
-            "status": "success",
+            "status": mcp_result.get("status", "success"),
             "use_case": "2_downstream_impact",
             "mcp_endpoint": self.mcp_endpoint,
             "change_request": change_request,
             "impact_analysis": {
                 "clickhouse_mcp_sql": sql_query,
-                "mcp_response": mcp_result,
+                "mcp_execution": mcp_result,
                 "impacted_scenes": [1],
                 "location_delta": {
                     "original": "INT. APARTMENT (Day - Studio Set)",
@@ -173,7 +196,7 @@ class ClickHouseMCPEngine:
         }
 
     # -------------------------------------------------------------------------
-    # USE CASE 3: CONTINUITY MANAGEMENT WITH CLICKHOUSE MCP
+    # USE CASE 3: CONTINUITY MANAGEMENT (STRICT LIVE MODE)
     # -------------------------------------------------------------------------
     def check_continuity(self, target_scene: int = 3, character: str = "SARAH") -> Dict[str, Any]:
         """Programmatically tracks actor & prop states via ClickHouse Cloud MCP SQL queries"""
@@ -181,14 +204,14 @@ class ClickHouseMCPEngine:
         mcp_result = self.execute_mcp_sql(sql_query)
 
         return {
-            "status": "success",
+            "status": mcp_result.get("status", "success"),
             "use_case": "3_continuity_management",
             "mcp_endpoint": self.mcp_endpoint,
             "target_scene": target_scene,
             "character": character,
             "continuity_check": {
                 "clickhouse_mcp_sql": sql_query,
-                "mcp_response": mcp_result,
+                "mcp_execution": mcp_result,
                 "temporal_timeline": [
                     {"scene": 1, "prop": "Metallic Hero Briefcase", "cost": "$3,500.00", "state": "Placed on Dining Table in Apartment", "status": "VERIFIED"},
                     {"scene": 2, "prop": "Stunt Umbrella", "cost": "$50.00", "state": "Held during street rain walk", "status": "VERIFIED"},
