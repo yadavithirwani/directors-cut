@@ -1,8 +1,8 @@
 """
 DIRECTOR'S CUT - Automated Playwright Video Recorder
-Launches Chromium, navigates to DIRECTOR'S CUT UI (http://localhost:8085),
-triggers Use Case 1 (Script Breakdown), Use Case 2 (Impact Analysis),
-and Use Case 3 (Continuity Check), recording demo_walkthrough.webm.
+Launches Chromium, navigates to DIRECTOR'S CUT UI (http://localhost:8088),
+executes the 3 Live Core Use Cases (Google ADK & ClickHouse Cloud MCP),
+and records demo_walkthrough.webm for hackathon video submission.
 """
 
 import time
@@ -20,22 +20,22 @@ def record_walkthrough():
 
         print("🌐 Navigating to http://localhost:8088...")
         page.goto("http://localhost:8088")
-        page.wait_for_timeout(2000)
+        page.wait_for_timeout(2500)
 
-        # 1. Trigger Use Case 1: Script Breakdown Ingestion
-        print("🎬 Executing Use Case 1: Script Breakdown Engine...")
+        # 1. Trigger Use Case 1: Script Breakdown Ingestion & Cost Engine
+        print("🎬 Executing Use Case 1: Script Breakdown Engine (Google ADK & ClickHouse)...")
         page.click("#btn-run-breakdown")
-        page.wait_for_timeout(3000)
+        page.wait_for_timeout(4500)
 
-        # 2. Trigger Use Case 2: Downstream Impact Analysis
-        print("⚡ Executing Use Case 2: Downstream Impact Analysis...")
+        # 2. Trigger Use Case 2: Downstream Impact & Financial Delta Analysis
+        print("⚡ Executing Use Case 2: Downstream Impact Analysis (ClickHouse SQL Delta)...")
         page.click("#btn-analyze-impact")
-        page.wait_for_timeout(3000)
+        page.wait_for_timeout(4500)
 
         # 3. Trigger Use Case 3: Continuity Management Check
-        print("🔍 Executing Use Case 3: Continuity Management System...")
+        print("🔍 Executing Use Case 3: Continuity Management System (Reshoot Risk Engine)...")
         page.click("#btn-run-continuity")
-        page.wait_for_timeout(3000)
+        page.wait_for_timeout(4500)
 
         print("✨ Walkthrough complete. Saving video recording...")
         context.close()

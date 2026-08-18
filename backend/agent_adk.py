@@ -33,11 +33,11 @@ class GoogleADKLineProducerAgent:
 
         if HAS_GOOGLE_GENAI:
             try:
-                # Use Google Cloud Vertex AI ADC authentication natively
+                # Initialize Vertex AI Client with Application Default Credentials
                 self.client = genai.Client(vertexai=True, project=self.project_id, location="us-central1")
                 print(f"[Google ADK] Initialized Vertex AI GenAI Client for project: {self.project_id}")
             except Exception as e:
-                print(f"[Google ADK Warning] Vertex AI client init: {e}")
+                print(f"[Google ADK Warning] Vertex AI client init notice: {e}")
 
     # -------------------------------------------------------------------------
     # USE CASE 1: SCRIPT BREAKDOWN (GOOGLE ADK INGESTION AGENT)
@@ -62,7 +62,7 @@ class GoogleADKLineProducerAgent:
                 if response and response.text:
                     agent_reasoning = response.text.strip()
             except Exception as e:
-                agent_reasoning = f"[Google ADK Vertex AI Agent] Parsed screenplay & loaded into ClickHouse. Status: {e}"
+                print(f"[Google ADK LLM Notice] {e}")
 
         ch_result = db_engine.run_script_breakdown(screenplay_text)
         ch_result["adk_agent"] = {
@@ -94,7 +94,7 @@ class GoogleADKLineProducerAgent:
                 if response and response.text:
                     agent_reasoning = response.text.strip()
             except Exception as e:
-                agent_reasoning = f"[Google ADK Vertex AI Agent] Diffed script change. Status: {e}"
+                print(f"[Google ADK LLM Notice] {e}")
 
         ch_result = db_engine.analyze_downstream_impact(change_request)
         ch_result["adk_agent"] = {
@@ -123,7 +123,7 @@ class GoogleADKLineProducerAgent:
                 if response and response.text:
                     agent_reasoning = response.text.strip()
             except Exception as e:
-                agent_reasoning = f"[Google ADK Vertex AI Agent] Validated prop states. Status: {e}"
+                print(f"[Google ADK LLM Notice] {e}")
 
         ch_result = db_engine.check_continuity(target_scene, character)
         ch_result["adk_agent"] = {
