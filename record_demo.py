@@ -18,8 +18,8 @@ def record_walkthrough():
         )
         page = context.new_page()
 
-        print("🌐 Navigating to http://localhost:8087...")
-        page.goto("http://localhost:8087")
+        print("🌐 Navigating to http://localhost:8088...")
+        page.goto("http://localhost:8088")
         page.wait_for_timeout(2000)
 
         # 1. Trigger Use Case 1: Script Breakdown Ingestion

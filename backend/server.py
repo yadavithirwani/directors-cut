@@ -22,7 +22,7 @@ if BACKEND_DIR not in sys.path:
 from agent_adk import adk_agent
 from clickhouse_db import db_engine
 
-PORT = 8087
+PORT = 8088
 FRONTEND_DIR = os.path.join(os.path.dirname(BACKEND_DIR), "frontend")
 
 class DirectorsCutHandler(http.server.SimpleHTTPRequestHandler):
