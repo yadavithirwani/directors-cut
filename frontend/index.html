@@ -5,40 +5,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DIRECTOR'S CUT — A screenplay isn't a document. It's a database.</title>
     <meta name="description" content="ClickHouse relational database engine + Google ADK Python orchestration for screenplays.">
-    <link rel="stylesheet" href="frontend/styles.css">
+    <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="app-container">
-        <!-- Header Banner -->
-        <header class="hero-header">
-            <div class="logo-badge">
-                <span class="clapper-icon">🎬</span>
-                <h1>DIRECTOR'S CUT</h1>
+    <!-- App Header -->
+    <header class="app-header">
+        <div class="logo-group">
+            <span class="clapper-icon">🎬</span>
+            <div>
+                <h1 class="brand-title">DIRECTOR'S <span class="highlight">CUT</span></h1>
+                <span class="brand-sub">"A screenplay isn't a document. It's a database."</span>
             </div>
-            <p class="tagline">"A screenplay isn't a document. It's a database."</p>
-            <div class="tech-pill-container">
-                <span class="tech-pill clickhouse-pill">⚡ Powered by ClickHouse Cloud</span>
-                <span class="tech-pill google-pill">🤖 Google ADK Agent</span>
+        </div>
+        <div class="header-badges">
+            <div class="badge">
+                <div class="badge-dot"></div>
+                <span>ClickHouse Cloud Engine</span>
             </div>
-        </header>
+            <div class="badge">
+                <div class="badge-dot" style="background: var(--cyan-glow);"></div>
+                <span>Google ADK (Python)</span>
+            </div>
+        </div>
+    </header>
 
-        <!-- Main Dashboard Grid -->
-        <main class="dashboard-grid">
-            <!-- Left Panel: Use Cases & Actions -->
-            <section class="control-panel glass-card">
-                <h2>Control Deck</h2>
-
-                <div class="usecase-card">
-                    <div class="usecase-header">
-                        <span class="usecase-num">1</span>
-                        <h3>Script Breakdown Engine</h3>
-                    </div>
-                    <p>Parses screenplay text into ClickHouse relational tables (`script_scenes`, `scene_characters`, `scene_props`).</p>
-                    <div class="input-group">
-                        <textarea id="input-screenplay-text" rows="5" placeholder="Paste custom screenplay text here... (e.g. SCENE 4: EXT. HELIPAD - NIGHT. Sarah grabs the briefcase...)">INT. APARTMENT - DAY
+    <!-- Main 3-Panel Dashboard Grid -->
+    <main class="dashboard-grid">
+        <!-- Panel 1: Use Case 1 - Script Breakdown -->
+        <section class="panel">
+            <div class="panel-header">
+                <h2>1. Script Breakdown Engine</h2>
+                <span class="pill-tag">Use Case 1</span>
+            </div>
+            <p class="panel-tagline">Ingests screenplays into ClickHouse relational tables (`script_scenes`, `scene_characters`, `scene_props`).</p>
+            
+            <div class="script-input-box">
+                <textarea id="input-screenplay-text" rows="5" placeholder="Paste custom screenplay text here...">INT. APARTMENT - DAY
 Sarah and Jack discuss the briefcase on the dining table.
 
 EXT. CITY STREET - NIGHT
@@ -46,71 +51,50 @@ Sarah walks in the rain past a black sedan.
 
 INT. WAREHOUSE - NIGHT
 Sarah meets Marcus in a cavernous warehouse and sets down the briefcase.</textarea>
-                    </div>
-                    <button id="btn-run-breakdown" class="btn primary-btn">
-                        <span>🎬 Run Script Breakdown & Cost Engine</span>
-                    </button>
-                </div>
+                <button id="btn-run-breakdown" class="btn btn-primary">🎬 Run Script Breakdown & Cost Engine</button>
+            </div>
 
-                <div class="usecase-card">
-                    <div class="usecase-header">
-                        <span class="usecase-num">2</span>
-                        <h3>Downstream Impact Analysis</h3>
-                    </div>
-                    <p>Calculates financial and scheduling deltas for script edits.</p>
-                    <div class="input-group">
-                        <input type="text" id="input-change-request" value="Move Scene 1 from Apartment to Industrial Warehouse Docks at Night." placeholder="Enter script edit...">
-                    </div>
-                    <button id="btn-analyze-impact" class="btn secondary-btn">
-                        <span>⚡ Analyze Script Impact</span>
-                    </button>
-                </div>
+            <div id="breakdown-output" class="breakdown-output">
+                <div class="placeholder-msg">Parsed scenes, line-item costs, and Google ADK reasoning will display here...</div>
+            </div>
+        </section>
 
-                <div class="usecase-card">
-                    <div class="usecase-header">
-                        <span class="usecase-num">3</span>
-                        <h3>Continuity Management System</h3>
-                    </div>
-                    <p>Programmatically tracks prop & actor states across scenes to prevent reshoots.</p>
-                    <button id="btn-run-continuity" class="btn danger-btn">
-                        <span>🔍 Run Continuity Check & Catch Reshoot Bug</span>
-                    </button>
-                </div>
-            </section>
+        <!-- Panel 2: Use Case 2 - Downstream Impact Analysis -->
+        <section class="panel">
+            <div class="panel-header">
+                <h2>2. Downstream Impact Analysis</h2>
+                <span class="pill-tag" style="color: var(--cyan-glow); border-color: var(--cyan-glow);">Use Case 2</span>
+            </div>
+            <p class="panel-tagline">Calculates financial & scheduling deltas for script edits via ClickHouse SQL.</p>
 
-            <!-- Right Panel: Output & Live Logs -->
-            <section class="output-panel glass-card">
-                <div class="panel-header">
-                    <h2>Live Output & Relational SQL</h2>
-                    <span id="status-indicator" class="status-badge ready">READY</span>
-                </div>
+            <div class="impact-input-box">
+                <input type="text" id="input-change-request" value="Move Scene 1 from Apartment to Industrial Warehouse Docks at Night.">
+                <button id="btn-analyze-impact" class="btn btn-secondary">⚡ Analyze Script Impact</button>
+            </div>
 
-                <div class="cost-hero-box hidden" id="cost-summary-box">
-                    <div class="cost-item">
-                        <span class="cost-label">Total Location Cost</span>
-                        <span class="cost-val" id="val-loc-cost">$0.00</span>
-                    </div>
-                    <div class="cost-item">
-                        <span class="cost-label">Total Wardrobe Cost</span>
-                        <span class="cost-val" id="val-wardrobe-cost">$0.00</span>
-                    </div>
-                    <div class="cost-item">
-                        <span class="cost-label">Total Prop Cost</span>
-                        <span class="cost-val" id="val-prop-cost">$0.00</span>
-                    </div>
-                    <div class="cost-item highlight">
-                        <span class="cost-label">Grand Total Budget</span>
-                        <span class="cost-val" id="val-grand-total">$0.00</span>
-                    </div>
-                </div>
+            <div id="impact-results" class="impact-results">
+                <div class="placeholder-msg">ClickHouse cost delta & scheduling impact will display here...</div>
+            </div>
+        </section>
 
-                <div class="json-viewer-container">
-                    <pre id="output-json">Click a control button on the left to execute Google ADK Agents & ClickHouse Cloud queries...</pre>
-                </div>
-            </section>
-        </main>
-    </div>
+        <!-- Panel 3: Use Case 3 - Continuity Management -->
+        <section class="panel">
+            <div class="panel-header">
+                <h2>3. Continuity Management</h2>
+                <span class="pill-tag" style="color: var(--emerald-glow); border-color: var(--emerald-glow);">Use Case 3</span>
+            </div>
+            <p class="panel-tagline">Programmatically tracks actor & prop states to catch reshoot bugs.</p>
 
-    <script src="frontend/app.js"></script>
+            <div class="continuity-controls">
+                <button id="btn-run-continuity" class="btn btn-warning">🔍 Run Continuity Check & Catch Bug</button>
+            </div>
+
+            <div id="continuity-results" class="continuity-results">
+                <div class="placeholder-msg">Temporal timeline & reshoot risk alerts will display here...</div>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
 </body>
 </html>
