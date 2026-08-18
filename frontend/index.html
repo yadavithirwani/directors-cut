@@ -1,105 +1,116 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DIRECTOR'S CUT — Autonomous Hollywood Operations Agent</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DIRECTOR'S CUT — A screenplay isn't a document. It's a database.</title>
+    <meta name="description" content="ClickHouse relational database engine + Google ADK Python orchestration for screenplays.">
+    <link rel="stylesheet" href="frontend/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
+    <div class="app-container">
+        <!-- Header Banner -->
+        <header class="hero-header">
+            <div class="logo-badge">
+                <span class="clapper-icon">🎬</span>
+                <h1>DIRECTOR'S CUT</h1>
+            </div>
+            <p class="tagline">"A screenplay isn't a document. It's a database."</p>
+            <div class="tech-pill-container">
+                <span class="tech-pill clickhouse-pill">⚡ Powered by ClickHouse Cloud</span>
+                <span class="tech-pill google-pill">🤖 Google ADK Agent</span>
+            </div>
+        </header>
 
-  <!-- TOP HEADER -->
-  <header class="app-header">
-    <div class="logo-group">
-      <div class="clapper-icon">🎬</div>
-      <div class="logo-text">
-        <span class="brand-title">DIRECTOR'S <span class="highlight">CUT</span></span>
-        <span class="brand-sub">Autonomous Hollywood Operations Agent (Google ADK & ClickHouse Cost Engine)</span>
-      </div>
+        <!-- Main Dashboard Grid -->
+        <main class="dashboard-grid">
+            <!-- Left Panel: Use Cases & Actions -->
+            <section class="control-panel glass-card">
+                <h2>Control Deck</h2>
+
+                <div class="usecase-card">
+                    <div class="usecase-header">
+                        <span class="usecase-num">1</span>
+                        <h3>Script Breakdown Engine</h3>
+                    </div>
+                    <p>Parses screenplay text into ClickHouse relational tables (`script_scenes`, `scene_characters`, `scene_props`).</p>
+                    <div class="input-group">
+                        <textarea id="input-screenplay-text" rows="5" placeholder="Paste custom screenplay text here... (e.g. SCENE 4: EXT. HELIPAD - NIGHT. Sarah grabs the briefcase...)">INT. APARTMENT - DAY
+Sarah and Jack discuss the briefcase on the dining table.
+
+EXT. CITY STREET - NIGHT
+Sarah walks in the rain past a black sedan.
+
+INT. WAREHOUSE - NIGHT
+Sarah meets Marcus in a cavernous warehouse and sets down the briefcase.</textarea>
+                    </div>
+                    <button id="btn-run-breakdown" class="btn primary-btn">
+                        <span>🎬 Run Script Breakdown & Cost Engine</span>
+                    </button>
+                </div>
+
+                <div class="usecase-card">
+                    <div class="usecase-header">
+                        <span class="usecase-num">2</span>
+                        <h3>Downstream Impact Analysis</h3>
+                    </div>
+                    <p>Calculates financial and scheduling deltas for script edits.</p>
+                    <div class="input-group">
+                        <input type="text" id="input-change-request" value="Move Scene 1 from Apartment to Industrial Warehouse Docks at Night." placeholder="Enter script edit...">
+                    </div>
+                    <button id="btn-analyze-impact" class="btn secondary-btn">
+                        <span>⚡ Analyze Script Impact</span>
+                    </button>
+                </div>
+
+                <div class="usecase-card">
+                    <div class="usecase-header">
+                        <span class="usecase-num">3</span>
+                        <h3>Continuity Management System</h3>
+                    </div>
+                    <p>Programmatically tracks prop & actor states across scenes to prevent reshoots.</p>
+                    <button id="btn-run-continuity" class="btn danger-btn">
+                        <span>🔍 Run Continuity Check & Catch Reshoot Bug</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Right Panel: Output & Live Logs -->
+            <section class="output-panel glass-card">
+                <div class="panel-header">
+                    <h2>Live Output & Relational SQL</h2>
+                    <span id="status-indicator" class="status-badge ready">READY</span>
+                </div>
+
+                <div class="cost-hero-box hidden" id="cost-summary-box">
+                    <div class="cost-item">
+                        <span class="cost-label">Total Location Cost</span>
+                        <span class="cost-val" id="val-loc-cost">$0.00</span>
+                    </div>
+                    <div class="cost-item">
+                        <span class="cost-label">Total Wardrobe Cost</span>
+                        <span class="cost-val" id="val-wardrobe-cost">$0.00</span>
+                    </div>
+                    <div class="cost-item">
+                        <span class="cost-label">Total Prop Cost</span>
+                        <span class="cost-val" id="val-prop-cost">$0.00</span>
+                    </div>
+                    <div class="cost-item highlight">
+                        <span class="cost-label">Grand Total Budget</span>
+                        <span class="cost-val" id="val-grand-total">$0.00</span>
+                    </div>
+                </div>
+
+                <div class="json-viewer-container">
+                    <pre id="output-json">Click a control button on the left to execute Google ADK Agents & ClickHouse Cloud queries...</pre>
+                </div>
+            </section>
+        </main>
     </div>
 
-    <div class="header-badges">
-      <div class="badge adk-badge">
-        <span class="badge-dot"></span> Google ADK Engine
-      </div>
-      <div class="badge clickhouse-badge">
-        <span class="badge-dot"></span> ClickHouse Line-Item Cost DB
-      </div>
-    </div>
-  </header>
-
-  <!-- MAIN USE CASE PIPELINE GRID -->
-  <main class="dashboard-grid">
-
-    <!-- LEFT COLUMN: USE CASE 1 - SCRIPT BREAKDOWN & COST ESTIMATION -->
-    <section class="panel breakdown-panel">
-      <div class="panel-header">
-        <h2>🎬 Use Case 1: Script Breakdown & Cost Engine</h2>
-        <span class="pill-tag">ClickHouse Line-Item Costs</span>
-      </div>
-      <p class="panel-tagline">"A screenplay isn't a document. It's a database."</p>
-
-      <div class="script-input-box">
-        <label for="script-text">Screenplay Text:</label>
-        <textarea id="script-text" rows="5" placeholder="Paste screenplay text...">SCENE 1 - INT. APARTMENT - DAY
-SARAH holds a metallic BRIEFCASE tight.
-JACK stands near the window.
-Sarah places the BRIEFCASE on the dining table.
-
-SCENE 2 - EXT. CITY STREET - NIGHT
-Sarah walks briskly under an umbrella past a BLACK SEDAN.
-
-SCENE 3 - INT. WAREHOUSE - NIGHT
-SARAH enters holding the metallic BRIEFCASE. MARCUS waits in shadows. Sarah sets BRIEFCASE on steel container.</textarea>
-        <button class="btn btn-primary" id="btn-run-breakdown">⚡ Ingest Breakdown & Calculate Costs</button>
-      </div>
-
-      <div class="breakdown-output" id="breakdown-output">
-        <div class="placeholder-msg">Click <strong>Ingest Breakdown & Calculate Costs</strong> to parse scenes, wardrobe, and prop line-item costs into ClickHouse.</div>
-      </div>
-    </section>
-
-    <!-- CENTER COLUMN: USE CASE 2 - DOWNSTREAM IMPACT & FINANCIAL DELTA -->
-    <section class="panel impact-panel">
-      <div class="panel-header">
-        <h2>⚡ Use Case 2: Downstream Impact & Financial Delta</h2>
-        <span class="pill-tag">Financial & Schedule Delta</span>
-      </div>
-      <p class="panel-tagline">Calculate financial, location, and scheduling ripple effects via ClickHouse SQL queries.</p>
-
-      <div class="impact-input-box">
-        <label for="input-script-change">Submitted Script Edit:</label>
-        <input type="text" id="input-script-change" value="Move Scene 1 from Apartment to Industrial Warehouse Docks at Night.">
-        <button class="btn btn-secondary" id="btn-analyze-impact">🔍 Calculate Financial & Location Delta</button>
-      </div>
-
-      <div class="impact-results" id="impact-results">
-        <div class="placeholder-msg">Click <strong>Calculate Financial & Location Delta</strong> to evaluate cost ripple effects.</div>
-      </div>
-    </section>
-
-    <!-- RIGHT COLUMN: USE CASE 3 - CONTINUITY MANAGEMENT & RESHOOT RISK -->
-    <section class="panel continuity-panel">
-      <div class="panel-header">
-        <h2>🔍 Use Case 3: Continuity Management & Reshoot Risk</h2>
-        <span class="pill-tag">Temporal State Engine</span>
-      </div>
-      <p class="panel-tagline">Programmatically track actor & prop physical states to prevent $65,000+ reshoot errors.</p>
-
-      <div class="continuity-controls">
-        <button class="btn btn-warning" id="btn-run-continuity">🛡️ Run Continuity & Reshoot Cost Check</button>
-      </div>
-
-      <div class="continuity-results" id="continuity-results">
-        <div class="placeholder-msg">Click <strong>Run Continuity & Reshoot Cost Check</strong> to verify character prop states across scene timelines.</div>
-      </div>
-    </section>
-
-  </main>
-
-  <script src="app.js"></script>
+    <script src="frontend/app.js"></script>
 </body>
 </html>

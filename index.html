@@ -36,7 +36,17 @@
                         <span class="usecase-num">1</span>
                         <h3>Script Breakdown Engine</h3>
                     </div>
-                    <p>Ingests screenplays into ClickHouse relational tables (`script_scenes`, `scene_characters`, `scene_props`).</p>
+                    <p>Parses screenplay text into ClickHouse relational tables (`script_scenes`, `scene_characters`, `scene_props`).</p>
+                    <div class="input-group">
+                        <textarea id="input-screenplay-text" rows="5" placeholder="Paste custom screenplay text here... (e.g. SCENE 4: EXT. HELIPAD - NIGHT. Sarah grabs the briefcase...)">INT. APARTMENT - DAY
+Sarah and Jack discuss the briefcase on the dining table.
+
+EXT. CITY STREET - NIGHT
+Sarah walks in the rain past a black sedan.
+
+INT. WAREHOUSE - NIGHT
+Sarah meets Marcus in a cavernous warehouse and sets down the briefcase.</textarea>
+                    </div>
                     <button id="btn-run-breakdown" class="btn primary-btn">
                         <span>🎬 Run Script Breakdown & Cost Engine</span>
                     </button>
